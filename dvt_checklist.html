@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Πλάνο DVT κάτω άκρου</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Serif:wght@600;700&display=swap">
+<style>
+  :root {
+    --ground: #f2f6f5;
+    --surface: #ffffff;
+    --surface-2: #e9f0ee;
+    --ink: #142020;
+    --muted: #5b6d6d;
+    --rule: #d3dedb;
+    --accent: #1c5464;
+    --accent-soft: #dceaed;
+    --alert: #97551a;
+    --alert-soft: #f6e8d8;
+    --done: #2f6b52;
+    --shadow: 0 1px 2px rgba(20, 32, 32, .07), 0 6px 16px -10px rgba(20, 32, 32, .25);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e1517;
+      --surface: #161f21;
+      --surface-2: #1d282a;
+      --ink: #e2eae9;
+      --muted: #94a7a6;
+      --rule: #2b3a3c;
+      --accent: #6fbccd;
+      --accent-soft: #1b3038;
+      --alert: #e0a66a;
+      --alert-soft: #33261a;
+      --done: #6cc099;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 20px -12px rgba(0, 0, 0, .7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e1517;
+    --surface: #161f21;
+    --surface-2: #1d282a;
+    --ink: #e2eae9;
+    --muted: #94a7a6;
+    --rule: #2b3a3c;
+    --accent: #6fbccd;
+    --accent-soft: #1b3038;
+    --alert: #e0a66a;
+    --alert-soft: #33261a;
+    --done: #6cc099;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 20px -12px rgba(0, 0, 0, .7);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding-inline: 18px;
+    padding-block: 28px 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  h1, h2, h3 { font-family: "Noto Serif", Cambria, Georgia, serif; text-wrap: balance; }
+
+  header h1 {
+    font-size: 26px;
+    line-height: 1.2;
+    margin: 0 0 6px;
+    color: var(--accent);
+  }
+  .case {
+    color: var(--muted);
+    font-size: 14px;
+    margin: 0;
+  }
+  .case b { color: var(--ink); font-weight: 600; }
+
+  .meter {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .bar {
+    flex: 1 1 200px;
+    height: 8px;
+    border-radius: 99px;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .bar > span {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width .25s ease;
+  }
+  .count {
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: .02em;
+  }
+  .reset {
+    font: inherit;
+    font-size: 12.5px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 3px 9px;
+    cursor: pointer;
+  }
+  .reset:hover { color: var(--ink); border-color: var(--muted); }
+
+  section.block {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .block > h2 {
+    margin: 0;
+    padding: 14px 18px 12px;
+    font-size: 17px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .when {
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  ul.items { list-style: none; margin: 0; padding: 0; }
+  ul.items > li { border-bottom: 1px solid var(--rule); }
+  ul.items > li:last-child { border-bottom: 0; }
+
+  label.item {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 4px 12px;
+    padding: 12px 18px 12px 16px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+  }
+  label.item:hover { background: var(--surface-2); }
+  label.item.critical { border-left-color: var(--alert); }
+  label.item input {
+    grid-row: span 2;
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  label.item input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .txt { font-weight: 500; }
+  .note {
+    grid-column: 2;
+    font-size: 13.2px;
+    color: var(--muted);
+  }
+  label.item.checked .txt { text-decoration: line-through; text-decoration-color: var(--muted); color: var(--muted); font-weight: 400; }
+
+  .tablewrap { overflow-x: auto; padding: 4px 18px 16px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.4px; min-width: 520px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.target td { background: var(--accent-soft); }
+  tr.target td:first-child { font-weight: 600; }
+  .dose { font-weight: 600; color: var(--accent); }
+
+  .flags { padding: 4px 18px 16px; }
+  .flags ul { margin: 0; padding-left: 20px; }
+  .flags li { margin-bottom: 4px; }
+  .flags strong { color: var(--alert); }
+
+  .foot { font-size: 12.6px; color: var(--muted); }
+  .foot p { margin: 0 0 6px; }
+  .sync { font-size: 12px; color: var(--muted); }
+
+  @media (max-width: 460px) {
+    header h1 { font-size: 22px; }
+    label.item { padding-inline: 12px; }
+    .tablewrap, .flags { padding-inline: 12px; }
+    .block > h2 { padding-inline: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Πλάνο διαχείρισης DVT κάτω άκρου</h1>
+    <p class="case">Αγόρι <b>13 ετών</b>, <b>53 kg</b>. Θρόμβωση οπίσθιων κνημιαίων φλεβών ΑΡ μετά από ακινητοποίηση σε νάρθηκα. Enoxaparin <b>53 mg ανά 12ωρο</b>. Ερώτημα υπό διερεύνηση: <b>οστεομυελίτιδα</b>.</p>
+    <div class="meter">
+      <div class="bar"><span id="fill"></span></div>
+      <span class="count" id="count">0 / 0</span>
+      <button class="reset" id="reset" type="button">Καθαρισμός</button>
+    </div>
+    <p class="sync" id="sync"></p>
+  </header>
+
+  <div id="lists"></div>
+
+  <section class="block">
+    <h2><span class="when">Αναφορά</span> Προσαρμογή Clexane με βάση το anti-Xa</h2>
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Anti-Xa (IU/mL)</th>
+            <th>Παράλειψη δόσης</th>
+            <th>Αλλαγή</th>
+            <th>Νέα δόση (53 kg)</th>
+            <th>Επανέλεγχος anti-Xa</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num">&lt; 0,35</td><td>Όχι</td><td>Αύξηση 25%</td>
+            <td class="num dose">66 mg</td><td>4 έως 6 ώρες μετά τη 2η νέα δόση</td>
+          </tr>
+          <tr>
+            <td class="num">0,35 – 0,49</td><td>Όχι</td><td>Αύξηση 10%</td>
+            <td class="num dose">58 mg</td><td>4 έως 6 ώρες μετά τη 2η νέα δόση</td>
+          </tr>
+          <tr class="target">
+            <td class="num">0,5 – 1,0</td><td>Όχι</td><td>Καμία (στόχος)</td>
+            <td class="num dose">53 mg</td><td>Την επόμενη ημέρα, μετά ανά εβδομάδα</td>
+          </tr>
+          <tr>
+            <td class="num">1,1 – 1,5</td><td>Όχι</td><td>Μείωση 20%</td>
+            <td class="num dose">42 mg</td><td>Πριν από την επόμενη δόση</td>
+          </tr>
+          <tr>
+            <td class="num">1,6 – 2,0</td><td>Ναι, για 3 ώρες</td><td>Μείωση 30%</td>
+            <td class="num dose">37 mg</td><td>Πριν από την επόμενη δόση, μετά ανά 12ωρο</td>
+          </tr>
+          <tr>
+            <td class="num">&gt; 2,0</td><td>Ναι, μέχρι anti-Xa &lt; 0,5</td><td>Μείωση 40%</td>
+            <td class="num dose">32 mg</td><td>Ανά 12ωρο μέχρι anti-Xa &lt; 0,5</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flags">
+      <p class="foot">Δείγμα 4 έως 6 ώρες μετά την υποδόρια ένεση και αφού έχουν δοθεί τουλάχιστον 2 ίδιες δόσεις (νομόγραμμα Monagle, CHEST 2012). Οι δόσεις της στήλης είναι στρογγυλοποιημένες για 53 kg. Ο χρόνος επανελέγχου είναι πρακτική σύσταση.</p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="when">Άμεσα</span> Πότε καλείται ιατρός</h2>
+    <div class="flags">
+      <ul>
+        <li><strong>Κυάνωση, ωχρότητα ή έντονο άλγος άκρου:</strong> επέκταση θρόμβου ή phlegmasia. Άμεσο triplex.</li>
+        <li><strong>Δύσπνοια, θωρακικό άλγος, ταχυκαρδία, πτώση SpO₂:</strong> πιθανή πνευμονική εμβολή.</li>
+        <li><strong>Πυρετός ή άνοδος CRP:</strong> ενισχύει το ενδεχόμενο οστεομυελίτιδας ή σηπτικής θρομβοφλεβίτιδας. Νέες αιμοκαλλιέργειες.</li>
+        <li><strong>Αιμορραγία</strong> (ούλα, ρινορραγία, αιματουρία, μέλαινα) ή πτώση Hb: έλεγχος anti-Xa και αιμοπεταλίων.</li>
+        <li><strong>Αύξηση περιμέτρου κνήμης</strong> παρά την αγωγή: επανεκτίμηση δόσης και απεικόνισης.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p>Το πλάνο ακολουθεί ASH 2018, ASH/ISTH 2024 και Kids-DOTT για την αντιπηκτική αγωγή, BSH 2022 για τη θρομβοφιλία και IDSA/PIDS 2021 για την οστεομυελίτιδα.</p>
+    <p>Οι τελικές αποφάσεις για τη διάρκεια της αγωγής και την αντιβίωση λαμβάνονται με παιδοαιματολόγο και λοιμωξιολόγο.</p>
+  </div>
+</div>
+
+<script>
+  const SECTIONS = [
+    {
+      when: "Σήμερα",
+      title: "Άμεσες ενέργειες",
+      items: [
+        { id: "antixa", t: "Παραλαβή anti-Xa και προσαρμογή δόσης με τον πίνακα", n: "Στόχος 0,5 έως 1,0 IU/mL. Καταγραφή ακριβούς ώρας ένεσης και αιμοληψίας.", c: true },
+        { id: "bcx", t: "Αιμοκαλλιέργειες, δύο σετ", n: "Αν δεν λήφθηκαν πριν από το Amox/Clav, λαμβάνονται τώρα. Η προηγηθείσα αντιβίωση μειώνει την απόδοση, δεν την μηδενίζει.", c: true },
+        { id: "abx", t: "Επανεκτίμηση αντιβιοτικού με λοιμωξιολόγο", n: "Το Amox/Clav καλύπτει MSSA αλλά όχι MRSA. Αν η MRI δείξει οστεομυελίτιδα, χρειάζεται αντισταφυλοκοκκικό σχήμα κατά το τοπικό προφίλ αντοχής.", c: true },
+        { id: "esr", t: "ΤΚΕ και επανάληψη CRP σε 48 ώρες", n: "Σημερινές τιμές: CRP 11,5 mg/L (από 17,9), WBC 5.000, D-dimers 1.500. Η πτώση συνηγορεί υπέρ ύφεσης." },
+        { id: "aps", t: "Αντιφωσφολιπιδικά: aCL IgG/IgM, anti-β2GPI IgG/IgM, αντιπηκτικό του λύκου", n: "Αιμοληψία λίγο πριν από την επόμενη δόση Clexane. Οπωσδήποτε πριν από τυχόν έναρξη rivaroxaban.", c: true },
+        { id: "renal", t: "Κρεατινίνη, ηπατική βιοχημεία, γενική ούρων", n: "Νεφρική λειτουργία για τη δοσολογία, πρωτεϊνουρία για αποκλεισμό νεφρωσικού συνδρόμου." },
+        { id: "circ", t: "Μέτρηση περιμέτρου κνήμης καθημερινά", n: "Ίδιο σημείο, σημαδεμένο με μαρκαδόρο, ίδια ώρα. Αντικειμενικός δείκτης ύφεσης." },
+        { id: "pe", t: "Κλινικός έλεγχος για πνευμονική εμβολή", n: "SpO₂, αναπνοές, σφύξεις. Χωρίς συμπτώματα δεν χρειάζεται απεικόνιση." },
+        { id: "fhx", t: "Λήψη οικογενειακού ιστορικού θρόμβωσης", n: "Καθορίζει αν θα γίνει έλεγχος κληρονομικής θρομβοφιλίας αργότερα." }
+      ]
+    },
+    {
+      when: "Αύριο",
+      title: "MRI και απόφαση για οστεομυελίτιδα",
+      items: [
+        { id: "mri", t: "MRI κνήμης και γόνατος ΑΡ με γαδολίνιο", n: "Ερωτήματα στο παραπεμπτικό: οστεομυελίτιδα, υποπεριοστικό απόστημα, σηπτική αρθρίτιδα, πυομυοσίτιδα, οίδημα από κάκωση, ή ογκόμορφη βλάβη.", c: true },
+        { id: "xray", t: "Ακτινογραφία κνήμης και γόνατος, αν δεν έχει γίνει", n: "Κάταγμα, περιοστική αντίδραση, λυτικές βλάβες." },
+        { id: "ortho", t: "Ορθοπαιδική εκτίμηση για παρακέντηση ή βιοψία, αν η MRI είναι θετική", n: "Δείγμα για καλλιέργεια και ιστολογική. Η ιστολογική αποκλείει όγκο οστού, που μιμείται οστεομυελίτιδα στη MRI." },
+        { id: "hold", t: "Προγραμματισμός διακοπής Clexane πριν από επεμβατική πράξη", n: "Τελευταία θεραπευτική δόση περίπου 24 ώρες πριν, σε συνεννόηση με αναισθησιολόγο." },
+        { id: "stopabx", t: "Αν αποκλειστεί λοίμωξη: διακοπή Amox/Clav", n: "Τότε το περιστατικό αντιμετωπίζεται ως απλή προκλητή DVT και ο παράγοντας κινδύνου θεωρείται λυμένος." }
+      ]
+    },
+    {
+      when: "Καθημερινά",
+      title: "Αντιπηκτική αγωγή και ασφάλεια",
+      items: [
+        { id: "time", t: "Enoxaparin σε σταθερές ώρες, ανά 12ωρο", n: "Η σταθερή ώρα κάνει αξιόπιστο το anti-Xa." },
+        { id: "plt", t: "Γενική αίματος με αιμοπετάλια, ημέρες 5 έως 10", n: "Ανίχνευση θρομβοπενίας από ηπαρίνη. Σπάνια στα παιδιά, αλλά σοβαρή." },
+        { id: "nsaid", t: "Αποφυγή ΜΣΑΦ, ασπιρίνης και ενδομυϊκών ενέσεων", n: "Παρακεταμόλη για την αναλγησία." },
+        { id: "bleed", t: "Καθημερινός έλεγχος για αιμορραγία", n: "Ούλα, μύτη, ούρα, κόπρανα, σημείο ένεσης." },
+        { id: "mob", t: "Κινητοποίηση χωρίς σφιχτό νάρθηκα", n: "Αν χρειάζεται στήριξη, αφαιρούμενος νάρθηκας. Το επίπεδο φόρτισης το ορίζει ο ορθοπαιδικός." }
+      ]
+    },
+    {
+      when: "Πριν το εξιτήριο",
+      title: "Μετάβαση στο σπίτι",
+      items: [
+        { id: "doac", t: "Απόφαση: συνέχιση LMWH ή αλλαγή σε rivaroxaban", n: "Για ≥50 kg: 20 mg μία φορά την ημέρα με φαγητό, μετά από τουλάχιστον 5 ημέρες παρεντερικής αγωγής. Όχι μαζί με rifampicin.", c: true },
+        { id: "teach", t: "Εκπαίδευση γονέων στην υποδόρια ένεση, αν συνεχίσει LMWH", n: "Τεχνική, εναλλαγή σημείων, τι κάνουμε σε παράλειψη δόσης." },
+        { id: "written", t: "Γραπτές οδηγίες κινδύνου για το σπίτι", n: "Σημεία υποτροπής, αιμορραγίας και πνευμονικής εμβολής, με τηλέφωνο επικοινωνίας." },
+        { id: "sport", t: "Οδηγία αποφυγής αθλημάτων επαφής όσο λαμβάνει αντιπηκτικά" },
+        { id: "appt", t: "Ραντεβού παιδοαιματολόγου και triplex στις 6 εβδομάδες" }
+      ]
+    },
+    {
+      when: "6 εβδομάδες",
+      title: "Επανεκτίμηση και διάρκεια",
+      items: [
+        { id: "us6", t: "Επανάληψη triplex κάτω άκρων", n: "Αν δεν υπάρχει αποφρακτικός θρόμβος και ο παράγοντας κινδύνου έχει λυθεί, η αγωγή μπορεί να σταματήσει στις 6 εβδομάδες (ASH/ISTH 2024, Kids-DOTT).", c: true },
+        { id: "dur", t: "Οριστικοποίηση διάρκειας: 6 εβδομάδες ή 3 μήνες", n: "Επιβεβαιωμένη οστεομυελίτιδα, αποφρακτικός θρόμβος, επίμονα αντιφωσφολιπιδικά ή σοβαρή θρομβοφιλία σημαίνουν 3 μήνες." },
+        { id: "aps2", t: "Επανάληψη αντιφωσφολιπιδικών στις 12 εβδομάδες, αν ήταν θετικά" },
+        { id: "thromb", t: "Έλεγχος θρομβοφιλίας μετά τη διακοπή της αγωγής, εφόσον υπάρχει ένδειξη", n: "Αντιθρομβίνη, πρωτεΐνη C, ελεύθερη πρωτεΐνη S. Ο FV Leiden και η προθρομβίνη G20210A γίνονται οποτεδήποτε. Δεν χρειάζονται MTHFR, PAI-1, ομοκυστεΐνη." },
+        { id: "pts", t: "Κλινική εκτίμηση για μεταθρομβωτικό σύνδρομο", n: "Χρόνιο οίδημα, πόνος ή βάρος στο άκρο." }
+      ]
+    }
+  ];
+
+  const DOC_PATH = "checklist/v1";
+  const LS_KEY = "dvt-checklist-v1";
+  const state = { checked: {} };
+  let dbDoc = null;
+  let saveTimer = null;
+  let applying = false;
+
+  const listsEl = document.getElementById("lists");
+  const fillEl = document.getElementById("fill");
+  const countEl = document.getElementById("count");
+  const syncEl = document.getElementById("sync");
+
+  function esc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function render() {
+    listsEl.innerHTML = SECTIONS.map(function (sec) {
+      const rows = sec.items.map(function (it) {
+        return '<li><label class="item' + (it.c ? " critical" : "") + '" data-id="' + it.id + '">' +
+          '<input type="checkbox" id="chk-' + it.id + '">' +
+          '<span class="txt">' + esc(it.t) + "</span>" +
+          (it.n ? '<span class="note">' + esc(it.n) + "</span>" : "") +
+          "</label></li>";
+      }).join("");
+      return '<section class="block"><h2><span class="when">' + esc(sec.when) + "</span>" + esc(sec.title) + "</h2>" +
+        '<ul class="items">' + rows + "</ul></section>";
+    }).join("");
+
+    listsEl.querySelectorAll("label.item").forEach(function (label) {
+      const id = label.dataset.id;
+      const box = label.querySelector("input");
+      box.checked = !!state.checked[id];
+      label.classList.toggle("checked", box.checked);
+      box.addEventListener("change", function () {
+        if (box.checked) state.checked[id] = true;
+        else delete state.checked[id];
+        label.classList.toggle("checked", box.checked);
+        updateMeter();
+        save();
+      });
+    });
+    updateMeter();
+  }
+
+  function total() {
+    return SECTIONS.reduce(function (n, s) { return n + s.items.length; }, 0);
+  }
+
+  function updateMeter() {
+    const t = total();
+    const done = Object.keys(state.checked).length;
+    countEl.textContent = done + " / " + t + " ολοκληρωμένα";
+    fillEl.style.width = t ? Math.round((done / t) * 100) + "%" : "0%";
+  }
+
+  function applyState(next) {
+    applying = true;
+    state.checked = (next && typeof next === "object") ? Object.assign({}, next) : {};
+    listsEl.querySelectorAll("label.item").forEach(function (label) {
+      const box = label.querySelector("input");
+      box.checked = !!state.checked[label.dataset.id];
+      label.classList.toggle("checked", box.checked);
+    });
+    updateMeter();
+    applying = false;
+  }
+
+  function saveLocal() {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state.checked)); } catch (e) { /* storage blocked */ }
+  }
+
+  function save() {
+    saveLocal();
+    if (!dbDoc) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      dbDoc.set({ checked: state.checked, updatedAt: new Date().toISOString() }).catch(function () {
+        syncEl.textContent = "Η αποθήκευση στον διακομιστή απέτυχε. Οι επιλογές κρατούνται σε αυτή τη συσκευή.";
+      });
+    }, 400);
+  }
+
+  function loadLocal() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) applyState(JSON.parse(raw));
+    } catch (e) { /* ignore */ }
+  }
+
+  document.getElementById("reset").addEventListener("click", function () {
+    if (!confirm("Να καθαριστούν όλα τα τικ;")) return;
+    applyState({});
+    save();
+  });
+
+  render();
+  loadLocal();
+
+  (async function () {
+    if (!window.claude || typeof window.claude.use !== "function") {
+      syncEl.textContent = "Οι επιλογές αποθηκεύονται σε αυτή τη συσκευή.";
+      return;
+    }
+    let db = null;
+    try { db = await window.claude.use("db"); } catch (e) { db = null; }
+    if (!db) {
+      syncEl.textContent = "Οι επιλογές αποθηκεύονται σε αυτή τη συσκευή.";
+      return;
+    }
+    dbDoc = db.doc(DOC_PATH);
+    syncEl.textContent = "Οι επιλογές συγχρονίζονται σε όλες τις συσκευές σας.";
+    dbDoc.onSnapshot(function (snap) {
+      if (!snap.exists) return;
+      if (snap.metadata && snap.metadata.hasPendingWrites) return;
+      const data = snap.data() || {};
+      applyState(data.checked);
+    }, function () {
+      syncEl.textContent = "Ο συγχρονισμός διακόπηκε. Οι επιλογές κρατούνται σε αυτή τη συσκευή.";
+    });
+  })();
+</script>
+
+</body>
+</html>
